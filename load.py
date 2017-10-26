@@ -1,29 +1,12 @@
 # encoding: utf-8
 
-import array
+import array;
 import time;
 import datetime;
 import base64;
 from OpenSSL import crypto;
-
 #
-def bytes2hex_text(buffer, delim = ",", line = True) :
-    result = "";
-    n = 0;
-    for i in range(0, len(buffer)) :
-        #
-        result += format("%02X"%buffer[i]);
-        if len(buffer) > i + 1 :
-            result += delim;
-        #
-        if line :
-            n += 1;
-            if n >= 0x10 :
-                result += "\n";
-                n = 0;
-    #
-    return result;
-    #return delim.join(format("%02X"%x) for x in buffer);
+from share import share;
 
 #
 file_read = open("ms_ca.cer", mode='r');
@@ -55,7 +38,7 @@ print("Version : " + str(x509.get_version() + 1));
 
 #
 x509_serial_number = int.to_bytes(x509.get_serial_number(), length = 0x10, byteorder='big');
-print("Serial Number : " + bytes2hex_text(x509_serial_number));
+print("Serial Number : " + share.bytes2hex_text(x509_serial_number));
 
 #
 x509_signature_algorithm = str(x509.get_signature_algorithm(), encoding = "utf-8");
@@ -68,7 +51,7 @@ for n in range(0, x509_extension_count) :
     extension = x509.get_extension(n);
     print("  " + str(extension.get_short_name(), encoding = "utf-8") + " :");
     value = extension.get_data();
-    print("   " + bytes2hex_text(value));
+    print("   " + share.bytes2hex_text(value));
 
 #
 x509_public_key = x509.get_pubkey();
@@ -78,11 +61,11 @@ print("Public Key Type :" + str(x509_public_key.type()));
 key = x509_public_key.to_cryptography_key();
 print("  Exponent : " + format("%X"%key.public_numbers().e));
 key_bytes = int.to_bytes(key.public_numbers().n, length = int(key.key_size/8), byteorder='big');
-print("  Modulus : \n" + bytes2hex_text(key_bytes));
+print("  Modulus : \n" + share.bytes2hex_text(key_bytes));
 
 #save public key to file:
 file_write = open("public_key.txt", mode='w');
-file_write.write(bytes2hex_text(key_bytes));
+file_write.write(share.bytes2hex_text(key_bytes));
 file_write.close();
 
 data = base64.b64encode(key_bytes);
