@@ -77,7 +77,7 @@ print("Public Key Type :" + str(x509_public_key.type()));
 
 key = x509_public_key.to_cryptography_key();
 print("  Exponent : " + format("%X"%key.public_numbers().e));
-key_bytes = int.to_bytes(key.public_numbers().n, length = 512, byteorder='big');
+key_bytes = int.to_bytes(key.public_numbers().n, length = int(key.key_size/8), byteorder='big');
 print("  Modulus : \n" + bytes2hex_text(key_bytes));
 
 #save public key to file:
